@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useAuth } from '../../contexts/AuthContext';
+import { useAuth } from '../../contexts/useAuth';
 import type { LoginRequest } from '../../types';
 
 const LoginForm: React.FC = () => {
@@ -25,8 +25,11 @@ const LoginForm: React.FC = () => {
 
     try {
       await login(formData);
-    } catch (err: any) {
-      setError(err.response?.data?.message || 'Login failed. Please try again.');
+    } catch (err: unknown) {
+      const errorMessage = err && typeof err === 'object' && 'response' in err 
+        ? (err.response as { data?: { message?: string } })?.data?.message || 'Login failed. Please try again.'
+        : 'Login failed. Please try again.';
+      setError(errorMessage);
     } finally {
       setIsLoading(false);
     }

@@ -1,26 +1,10 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import type { ReactNode } from 'react';
 import type { User, LoginRequest, RestaurantRegistrationRequest } from '../types';
+import { AuthContext, type AuthContextType } from './AuthContextTypes';
 import apiService from '../services/api';
 
-interface AuthContextType {
-  user: User | null;
-  token: string | null;
-  login: (credentials: LoginRequest) => Promise<void>;
-  register: (data: RestaurantRegistrationRequest) => Promise<void>;
-  logout: () => void;
-  isLoading: boolean;
-}
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
-
-export const useAuth = () => {
-  const context = useContext(AuthContext);
-  if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
-  }
-  return context;
-};
 
 interface AuthProviderProps {
   children: ReactNode;

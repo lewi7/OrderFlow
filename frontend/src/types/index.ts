@@ -161,7 +161,7 @@ export interface RevenueAnalytics {
 // WebSocket Types
 export interface WebSocketMessage {
   type: 'ORDER_CREATED' | 'ORDER_UPDATED' | 'ORDER_STATUS_CHANGED';
-  data: any;
+  data: Order | OrderItem | { orderId: number; status: string };
 }
 
 // Form Types

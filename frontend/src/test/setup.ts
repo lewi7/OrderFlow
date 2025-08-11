@@ -10,7 +10,9 @@ const localStorageMock = {
   setItem: vi.fn(),
   removeItem: vi.fn(),
   clear: vi.fn(),
-}
+  length: 0,
+  key: vi.fn(),
+} as Storage
 global.localStorage = localStorageMock
 
 // Mock sessionStorage
@@ -19,7 +21,9 @@ const sessionStorageMock = {
   setItem: vi.fn(),
   removeItem: vi.fn(),
   clear: vi.fn(),
-}
+  length: 0,
+  key: vi.fn(),
+} as Storage
 global.sessionStorage = sessionStorageMock
 
 // Mock window.matchMedia

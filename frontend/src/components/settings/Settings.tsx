@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useAuth } from '../../contexts/AuthContext';
+import { useAuth } from '../../contexts/useAuth';
 import type { User } from '../../types';
 import apiService from '../../services/api';
 
@@ -111,7 +111,7 @@ const Settings: React.FC = () => {
     }
   };
 
-  const handleUserDelete = async (_userId: number) => { // Will be implemented when backend is ready
+  const handleUserDelete = async () => { // Will be implemented when backend is ready
     if (window.confirm('Are you sure you want to delete this user?')) {
       try {
         // Note: We need to implement deleteUser in the API service
@@ -364,7 +364,7 @@ const Settings: React.FC = () => {
                             </button>
                             {userItem.role !== 'OWNER' && (
                               <button
-                                onClick={() => handleUserDelete(userItem.id)}
+                                onClick={() => handleUserDelete()}
                                 className="text-red-600 hover:text-red-900"
                               >
                                 Delete

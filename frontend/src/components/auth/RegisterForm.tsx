@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { useAuth } from '../../contexts/AuthContext';
+import { useAuth } from '../../contexts/useAuth';
 import type { RestaurantRegistrationRequest } from '../../types';
 
 const RegisterForm: React.FC = () => {
@@ -71,8 +71,11 @@ const RegisterForm: React.FC = () => {
 
     try {
       await register(formData);
-    } catch (err: any) {
-      setError(err.response?.data?.message || 'Registration failed. Please try again.');
+    } catch (err: unknown) {
+      const errorMessage = err && typeof err === 'object' && 'response' in err 
+        ? (err.response as { data?: { message?: string } })?.data?.message || 'Registration failed. Please try again.'
+        : 'Registration failed. Please try again.';
+      setError(errorMessage);
     } finally {
       setIsLoading(false);
     }
