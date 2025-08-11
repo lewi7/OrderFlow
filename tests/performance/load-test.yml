@@ -1,0 +1,54 @@
+config:
+  target: '{{ $processEnvironment.STAGING_URL || "http://localhost:8080" }}'
+  phases:
+    - duration: 60
+      arrivalRate: 10
+      name: "Warm up phase"
+    - duration: 120
+      arrivalRate: 50
+      name: "Sustained load phase"
+    - duration: 60
+      arrivalRate: 100
+      name: "Peak load phase"
+  defaults:
+    headers:
+      Content-Type: 'application/json'
+      Authorization: 'Bearer {{ $processEnvironment.TEST_TOKEN }}'
+
+scenarios:
+  - name: "Analytics API Load Test"
+    weight: 40
+    flow:
+      - get:
+          url: "/api/analytics/daily?days=7"
+      - think: 2
+      - get:
+          url: "/api/analytics/revenue?days=7"
+      - think: 1
+      - get:
+          url: "/api/analytics/items?days=7"
+
+  - name: "Orders API Load Test"
+    weight: 30
+    flow:
+      - get:
+          url: "/api/orders"
+      - think: 1
+      - get:
+          url: "/api/orders/active"
+
+  - name: "Menu API Load Test"
+    weight: 20
+    flow:
+      - get:
+          url: "/api/menu"
+      - think: 1
+      - get:
+          url: "/api/menu/categories"
+
+  - name: "User Management Load Test"
+    weight: 10
+    flow:
+      - get:
+          url: "/api/users"
+      - think: 2 
