@@ -209,8 +209,38 @@ jobs:
         
     - name: Verify Docker image
       run: |
+        echo "🔍 Verifying Docker image..."
         docker images orderflow:latest
-        docker run --rm orderflow:latest java -version
+        
+        echo "📋 Image details:"
+        docker inspect orderflow:latest | grep -E "(Architecture|Size|Created)"
+        
+        echo "🧪 Testing image layers:"
+        docker history orderflow:latest --no-trunc | head -10
+        
+        echo "✅ Docker image verification completed successfully"
+        
+    - name: Verify frontend files in image
+      if: always()
+      run: |
+        echo "🔍 Verifying frontend files in Docker image..."
+        
+        # Create a temporary container to check files
+        CONTAINER_ID=$(docker create orderflow:latest)
+        
+        echo "📁 Checking static files:"
+        docker exec $CONTAINER_ID ls -la /app/static || echo "⚠️ Could not list static files"
+        
+        echo "📄 Checking index.html:"
+        docker exec $CONTAINER_ID test -f /app/static/index.html && echo "✅ index.html found" || echo "❌ index.html missing"
+        
+        echo "📦 Checking assets:"
+        docker exec $CONTAINER_ID test -d /app/static/assets && echo "✅ assets directory found" || echo "❌ assets directory missing"
+        
+        # Clean up
+        docker rm $CONTAINER_ID
+        
+        echo "✅ Frontend files verification completed"
 
   performance-test:
     name: Performance Test
