@@ -1,11 +1,21 @@
 # Multi-stage build for OrderFlow application
 FROM node:18-alpine AS frontend-builder
 
-WORKDIR /app/frontend
-COPY frontend/package*.json ./
-RUN npm ci --only=production
+# Install build dependencies
+RUN apk add --no-cache python3 make g++
 
+WORKDIR /app/frontend
+
+# Copy package files first for better caching
+COPY frontend/package*.json ./
+
+# Install all dependencies (including dev dependencies for build)
+RUN npm ci
+
+# Copy source code
 COPY frontend/ ./
+
+# Build the frontend
 RUN npm run build
 
 # Backend build stage
