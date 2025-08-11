@@ -280,6 +280,8 @@ jobs:
     - name: Run performance tests
       working-directory: ./frontend
       run: |
+        set -e  # Exit on any error
+        
         echo "🚀 Running performance tests..."
         
         # Create test results directory
@@ -289,19 +291,17 @@ jobs:
         if command -v artillery &> /dev/null; then
           echo "✅ Artillery is available"
           
-          # Create a simple test configuration
-          cat > test-results/basic-test.yml << 'EOF'
-          config:
-            target: 'http://localhost:8080'
-            phases:
-              - duration: 10
-                arrivalRate: 1
-            scenarios:
-              - name: "Health Check"
-                requests:
-                  - get:
-                      url: "/health"
-          EOF
+          # Create a simple test configuration using echo instead of heredoc
+          echo "config:" > test-results/basic-test.yml
+          echo "  target: 'http://localhost:8080'" >> test-results/basic-test.yml
+          echo "  phases:" >> test-results/basic-test.yml
+          echo "    - duration: 10" >> test-results/basic-test.yml
+          echo "      arrivalRate: 1" >> test-results/basic-test.yml
+          echo "  scenarios:" >> test-results/basic-test.yml
+          echo "    - name: 'Health Check'" >> test-results/basic-test.yml
+          echo "      requests:" >> test-results/basic-test.yml
+          echo "        - get:" >> test-results/basic-test.yml
+          echo "            url: '/health'" >> test-results/basic-test.yml
           
           echo "📋 Test configuration created"
           echo "Performance test setup completed successfully" > test-results/summary.txt
@@ -312,6 +312,18 @@ jobs:
         
         echo "📊 Test results directory created:"
         ls -la test-results/
+        
+        # Verify the test configuration file was created
+        if [ -f test-results/basic-test.yml ]; then
+          echo "✅ Test configuration file created successfully"
+          echo "📄 Test file contents:"
+          cat test-results/basic-test.yml
+        else
+          echo "❌ Test configuration file was not created"
+          exit 1
+        fi
+        
+        echo "✅ Performance test step completed successfully"
         
     - name: Upload performance results
       uses: actions/upload-artifact@v4
