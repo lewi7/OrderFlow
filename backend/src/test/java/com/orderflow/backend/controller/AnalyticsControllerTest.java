@@ -15,8 +15,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -39,9 +37,6 @@ class AnalyticsControllerTest {
 
     @Mock
     private Authentication authentication;
-
-    @Mock
-    private SecurityContext securityContext;
 
     @InjectMocks
     private AnalyticsController analyticsController;
@@ -82,9 +77,7 @@ class AnalyticsControllerTest {
         testOrder.setTotalAmount(new BigDecimal("31.98"));
         testOrder.setCreatedAt(LocalDateTime.now());
 
-        // Setup security context
-        when(securityContext.getAuthentication()).thenReturn(authentication);
-        SecurityContextHolder.setContext(securityContext);
+        // Setup authentication mock
         when(authentication.getPrincipal()).thenReturn(testUser);
     }
 
@@ -150,6 +143,11 @@ class AnalyticsControllerTest {
         assertNotNull(response);
         assertEquals(200, response.getStatusCodeValue());
         assertNotNull(response.getBody());
-        assertTrue(response.getBody().isEmpty());
+        // The controller always returns entries for each day in the range, even with no orders
+        assertEquals(7, response.getBody().size());
+        // Check that the first day has 0 orders
+        Map<String, Object> firstDay = response.getBody().get(0);
+        assertEquals(0, firstDay.get("orderCount"));
+        assertEquals(BigDecimal.ZERO, firstDay.get("totalRevenue"));
     }
 } 
