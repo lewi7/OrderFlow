@@ -1,4 +1,4 @@
-# OrderFlow 🍕
+# OrderFlow 
 **Multi-tenant restaurant order management system**
 
 OrderFlow is a full-stack platform that unifies restaurant orders from multiple sources into a single real-time dashboard. It is designed with scalability, security, and real-world operations in mind.
